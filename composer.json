@@ -1,14 +1,14 @@
 {
   "name": "drunomics/playwright_starter",
   "description": "Provides starter template for testing with playwright.",
-  "type": "playwright-test",
+  "type": "drupal-drush",
   "require": {
     "drush/drush": ">=11"
   },
   "license": "GPL-2.0-or-later",
   "autoload": {
-    "classmap": [
-      "drush/src"
-    ]
+    "psr-4": {
+      "Drush\\Commands\\playwright_starter\\": "drush/src"
+    }
   }
 }
