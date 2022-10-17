@@ -1,6 +1,6 @@
 <?php
 
-namespace Drush\Commands\playwright_commands;
+namespace Drush\Commands\playwright_starter;
 
 use drunomics\ServiceUtils\Core\Database\DatabaseConnectionTrait;
 use drunomics\ServiceUtils\Core\Entity\EntityTypeManagerTrait;
