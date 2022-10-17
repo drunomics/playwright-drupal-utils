@@ -1,0 +1,99 @@
+const { expect } = require('@playwright/test');
+
+module.exports = {
+  IShouldBeLoggedIn: async (page) => {
+    await page.goto('/user', { waitUntil: 'networkidle' });
+    await expect(page.locator('body.user-logged-in').first()).toHaveCount(1);
+    await expect(page).toHaveURL(/.*(?!user\/login)/);
+  },
+  IShouldNotBeLoggedIn: async (page) => {
+    await page.goto('/user/login', { waitUntil: 'networkidle' });
+    await expect(page.locator('body.user-logged-in').first()).toHaveCount(0);
+    await expect(page).toHaveURL(/.*user\/login/);
+  },
+  ILogInAs: async ([page, username]) => {
+    await page.goto('/user/login');
+    await page.fill('input[name="name"]', username);
+    await page.fill('input[name="pass"]', process.env.APP_SECRET);
+    await page.click('input[value="Log in"]', process.env.APP_SECRET);
+  },
+  theCacheHitExists: async ([page, response]) => {
+    expect(await response.headerValue('X-Drupal-Cache') == 'HIT' ||
+      await response.headerValue('X-Drupal-Dynamic-Cache') == 'HIT' ||
+      await response.headerValue('X-Cache') == 'HIT' ||
+      await response.headerValue('X-Varnish-Cache') == 'HIT').toBeTruthy();
+  },
+  theHeaderContains: async ([response, headerValue, shouldContain, ...headers]) => {
+    for (const header of headers) {
+      if (shouldContain) {
+        expect(await response.headerValue(headerValue)).toContain(header);
+      } else {
+        expect(await response.headerValue(headerValue)).not.toContain(header);
+      }
+    }
+  },
+  checkMetaContentByProperty: async ([response, key, value, content]) => {
+    let jsonContent = JSON.parse(await response.text());
+    for (const meta_elem of jsonContent.metatags.meta) {
+      if (meta_elem[key] === value) {
+        expect(meta_elem['content']).toEqual(content);
+      }
+    }
+  },
+  checkHomepageCanonicalUrls: async (response) => {
+    let jsonContent = JSON.parse(await response.text());
+    let canonicalURL = process.env.SITE_FRONTEND_BASE_URL + '/';
+    const INSTALL_EXTENSIONS = process.env.LDP_INSTALL_EXTENSIONS ? process.env.LDP_INSTALL_EXTENSIONS : '';
+    if (INSTALL_EXTENSIONS.includes('ldp_cp')) {
+      canonicalURL = process.env.LDP_CP_PORTAL_BASE_URL_DEVPORTAL + '/';
+    }
+    let canonicalExists = false;
+    for (const meta_elem of jsonContent.metatags.link) {
+      if (meta_elem.rel === 'canonical') {
+        canonicalExists = true;
+        expect(meta_elem.href).toEqual(canonicalURL.toString().trim());
+      }
+    }
+    expect(canonicalExists, 'Expect canonical url to exist').toBeTruthy();
+  },
+  checkMetaUrlContentByProperty: async ([response, key, value]) => {
+    let jsonContent = JSON.parse(await response.text());
+    let canonicalURL = process.env.SITE_FRONTEND_BASE_URL + '/';
+    const INSTALL_EXTENSIONS = process.env.LDP_INSTALL_EXTENSIONS ? process.env.LDP_INSTALL_EXTENSIONS : '';
+    if (INSTALL_EXTENSIONS.includes('ldp_cp')) {
+      canonicalURL = process.env.LDP_CP_PORTAL_BASE_URL_DEVPORTAL + '/';
+    }
+    let canonicalExists = false;
+    for (const meta_elem of jsonContent.metatags.meta) {
+      if (meta_elem[key] === value) {
+        canonicalExists = true;
+        expect(meta_elem.content).toEqual(canonicalURL.toString().trim());
+      }
+    }
+    expect(canonicalExists, `Expect metadata key "${key}" to exist with value "${value}"`).toBeTruthy();
+  },
+  /**
+   * Checks if current drupal installation is contentpool.
+   * @returns {Boolean} Weather site is contentpool or not.
+   */
+  isContentpoolSite: async () => {
+    const INSTALL_EXTENSIONS = process.env.LDP_INSTALL_EXTENSIONS ? process.env.LDP_INSTALL_EXTENSIONS : '';
+    return INSTALL_EXTENSIONS.includes('ldp_cp');
+  },
+  /**
+   * Checks if there are javascript errors in the browser console.
+   * @param  {String} message Expected message.
+   */
+  checkJavascriptErrors: async (page) => {
+    let errors = await page.evaluate('window.behat_testing.errors');
+    await expect(errors.length).toEqual(0);
+  },
+  /**
+   * Checks if given message exists in drupal status messages.
+   * @param  {Array.<{message: String, page: Page}>} array Expected message
+   * and page object.
+   */
+  theStatusMessageShouldContain: async ([message, page]) => {
+    await expect(page.locator('div.messages__content')).toContainText(message, { useInnerText: true});
+  }
+};

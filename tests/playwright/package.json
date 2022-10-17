@@ -1,0 +1,15 @@
+{
+  "name": "ldp-playwright",
+  "version": "1.0.0",
+  "description": "Testing with playwright",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "drunomics",
+  "license": "proprietary",
+  "devDependencies": {
+    "@playwright/test": "1.24.2",
+    "dotenv": "^16.0.1"
+  }
+}
