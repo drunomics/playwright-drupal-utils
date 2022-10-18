@@ -13,7 +13,7 @@ use Drush\Commands\DrushCommands;
 /**
  * Defines command for dealing with playwright testing requirements.
  */
-class PlaywrightCommands extends DrushCommands {
+class PlaywrightDrushCommands extends DrushCommands {
   use EntityTypeManagerTrait;
   use AliasManagerTrait;
   use DatabaseConnectionTrait;
