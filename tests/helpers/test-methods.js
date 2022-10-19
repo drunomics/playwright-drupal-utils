@@ -1,11 +1,6 @@
 const { expect } = require('@playwright/test');
 
 module.exports = {
-  IShouldBeLoggedIn: async (page) => {
-    await page.goto('/user', { waitUntil: 'networkidle' });
-    await expect(page.locator('body.user-logged-in').first()).toHaveCount(1);
-    await expect(page).toHaveURL(/.*(?!user\/login)/);
-  },
   IShouldNotBeLoggedIn: async (page) => {
     await page.goto('/user/login', { waitUntil: 'networkidle' });
     await expect(page.locator('body.user-logged-in').first()).toHaveCount(0);
@@ -16,6 +11,8 @@ module.exports = {
     await page.fill('input[name="name"]', username);
     await page.fill('input[name="pass"]', process.env.APP_SECRET);
     await page.click('input[value="Log in"]', process.env.APP_SECRET);
+    // Then make sure login worked.
+    await expect(page.locator('body.user-logged-in').first()).toHaveCount(1);
   },
   theCacheHitExists: async ([page, response]) => {
     expect(await response.headerValue('X-Drupal-Cache') == 'HIT' ||
@@ -79,6 +76,15 @@ module.exports = {
   isContentpoolSite: async () => {
     const INSTALL_EXTENSIONS = process.env.LDP_INSTALL_EXTENSIONS ? process.env.LDP_INSTALL_EXTENSIONS : '';
     return INSTALL_EXTENSIONS.includes('ldp_cp');
+  },
+  /**
+   * Checks if given ldp extensions are enabled.
+   * @param  {Array<String>} extensions Extensions to check.
+   * @returns {Boolean} Weather extensions are enabled or not.
+   */
+  areExtensionsEnabled: async (extensions) => {
+    const INSTALL_EXTENSIONS = process.env.LDP_INSTALL_EXTENSIONS ? process.env.LDP_INSTALL_EXTENSIONS : '';
+    return extensions.every(extension => INSTALL_EXTENSIONS.includes(extension));
   },
   /**
    * Checks if there are javascript errors in the browser console.
