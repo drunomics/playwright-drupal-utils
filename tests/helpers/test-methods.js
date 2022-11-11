@@ -37,9 +37,9 @@ module.exports = {
       }
     }
   },
-  checkHomepageCanonicalUrls: async (response) => {
+  checkHomepageCanonicalUrls: async ([response, frontendURL]) => {
     let jsonContent = JSON.parse(await response.text());
-    let canonicalURL = process.env.SITE_FRONTEND_BASE_URL + '/';
+    let canonicalURL = frontendURL + '/';
     const INSTALL_EXTENSIONS = process.env.LDP_INSTALL_EXTENSIONS ? process.env.LDP_INSTALL_EXTENSIONS : '';
     if (INSTALL_EXTENSIONS.includes('ldp_cp')) {
       canonicalURL = process.env.LDP_CP_PORTAL_BASE_URL_DEVPORTAL + '/';
@@ -53,9 +53,9 @@ module.exports = {
     }
     expect(canonicalExists, 'Expect canonical url to exist').toBeTruthy();
   },
-  checkMetaUrlContentByProperty: async ([response, key, value]) => {
+  checkMetaUrlContentByProperty: async ([response, key, value, frontendURL]) => {
     let jsonContent = JSON.parse(await response.text());
-    let canonicalURL = process.env.SITE_FRONTEND_BASE_URL + '/';
+    let canonicalURL = frontendURL + '/';
     const INSTALL_EXTENSIONS = process.env.LDP_INSTALL_EXTENSIONS ? process.env.LDP_INSTALL_EXTENSIONS : '';
     if (INSTALL_EXTENSIONS.includes('ldp_cp')) {
       canonicalURL = process.env.LDP_CP_PORTAL_BASE_URL_DEVPORTAL + '/';
