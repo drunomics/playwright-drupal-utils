@@ -25,6 +25,12 @@ The package provides:
 * Adjust the package installation location by adjusting installer-paths in your composer.json. The package needs to be installed in the directory with your playwright installation (location of your package.json). 
 * Require the helpers in your test files e.g. `const helpers = require("../playwright-drupal-utils/tests/helpers/test-methods");`
 
+
+## License
+
+* Drush Extension is licensed under [GPLv3 or later](src/LICENSE)
+* JavaScript code is licensed under [MIT](tests/LICENSE)
+
 ## Credits
  
   developed by drunomics GmbH, hello@drunomics.com
