@@ -8,7 +8,7 @@
   "license": "GPL-2.0-or-later",
   "autoload": {
     "psr-4": {
-      "playwright-drupal-utils\\": "src"
+      "playwright_drupal_utils\\": "src"
     }
   }
 }
