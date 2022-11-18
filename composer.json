@@ -1,5 +1,5 @@
 {
-  "name": "drunomics/playwright_drupal_utils",
+  "name": "drunomics/playwright-drupal-utils",
   "description": "Provides commands and helpers for testing with playwright.",
   "type": "playwright-helper",
   "require": {
@@ -8,7 +8,7 @@
   "license": "GPL-2.0-or-later",
   "autoload": {
     "psr-4": {
-      "playwright_drupal_utils\\": "src"
+      "playwright-drupal-utils\\": "src"
     }
   }
 }
