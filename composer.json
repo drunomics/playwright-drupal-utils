@@ -3,7 +3,8 @@
   "description": "Provides commands and helpers for testing with playwright.",
   "type": "playwright-helper",
   "require": {
-    "drush/drush": ">=11"
+    "drush/drush": ">=11",
+    "drunomics/service-utils": "^9.4.1"
   },
   "license": "GPL-3.0-or-later",
   "autoload": {
