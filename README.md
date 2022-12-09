@@ -18,6 +18,8 @@ The package provides:
 
   * `./tests/helpers/test-methods` is a collection of reusable and often used helper functions, for example logging in and out of the site, headers check etc.
 
+  * `./tests/helpers/a11y-helper` is a helper for running accessibility checks using axe-core.
+
 ### Setup
 
 * Add this package to your project's dev dependencies.
