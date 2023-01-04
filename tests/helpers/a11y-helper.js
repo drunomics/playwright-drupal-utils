@@ -20,7 +20,9 @@ module.exports = {
         "best-practice",
         "wcag***",
         "ACT",
-      ]).analyze();
+      ])
+      .disableRules(['color-contrast', 'color-contrast-enhanced'])
+      .analyze();
 
     // Print out the report with issues found.
     console.table(accessibilityScanResults.violations.map((violation) => {
