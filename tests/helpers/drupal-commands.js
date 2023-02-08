@@ -24,6 +24,17 @@ module.exports = {
     const result = drush(`test:node-get-id "${node_title}"`);
     return await page.goto('/node/' + result.toString() + '/layout');
   },
+  
+  /**
+   * Finds node ID via drush and visits node layout preview page.
+   * @param  {Array<{page: Page, node_title: String}>} array Page object and
+   *   node title
+   * @return {Response} The response.
+   */
+  visitNodeLayoutPreviewPage: async ([page, node_title]) => {
+    const result = drush(`test:node-get-id "${node_title}"`);
+    return await page.goto('/node/' + result.toString() + '/layout-preview?auth=1');
+  },
 
   /**
    * Finds node ID via drush and returns it.
