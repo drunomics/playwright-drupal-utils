@@ -24,6 +24,19 @@ module.exports = {
     const result = drush(`test:node-get-id "${node_title}"`);
     return await page.goto('/node/' + result.toString() + '/layout');
   },
+  
+  /**
+   * Finds node ID via drush and visits node layout preview page in the frontend.
+   * @param  {Array<{page: Page, node_title: String}>} array Page object and
+   *   node title
+   * @return {Response} The response.
+   */
+  visitNodeLayoutPreviewPage: async ([page, node_title]) => {
+    const result = drush(`test:node-get-id "${node_title}"`);
+    // We do not have to explicitly go to the frontend via an absolute URL,
+    // since the backend path redirects to the frontend also.
+    return await page.goto('/node/' + result.toString() + '/layout-preview?auth=1');
+  },
 
   /**
    * Finds node ID via drush and returns it.
