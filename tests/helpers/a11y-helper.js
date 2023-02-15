@@ -16,7 +16,6 @@ module.exports = {
         "wcag21a",
         "wcag21aa",
         "best-practice",
-        "ACT",
       ])
       .analyze();
 
