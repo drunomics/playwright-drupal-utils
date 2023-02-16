@@ -13,15 +13,10 @@ module.exports = {
       .withTags([
         "wcag2a",
         "wcag2aa",
-        "wcag2aaa",
         "wcag21a",
         "wcag21aa",
-        "wcag21aaa",
         "best-practice",
-        "wcag***",
-        "ACT",
       ])
-      .disableRules(['color-contrast', 'color-contrast-enhanced'])
       .analyze();
 
     // Print out the report with issues found.
