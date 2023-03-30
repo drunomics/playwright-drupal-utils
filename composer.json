@@ -4,7 +4,7 @@
   "type": "playwright-helper",
   "require": {
     "drush/drush": ">=11",
-    "drunomics/service-utils": "^9.4.1"
+    "drunomics/service-utils": "^9.4.1 || ^10.1.0"
   },
   "license": "GPL-3.0-or-later",
   "autoload": {
