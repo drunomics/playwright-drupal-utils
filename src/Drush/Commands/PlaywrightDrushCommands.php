@@ -250,6 +250,7 @@ class PlaywrightDrushCommands extends DrushCommands {
   public function cleanUpContent(string $keyword) {
     $node_storage = $this->getEntityTypeManager()->getStorage('node');
     $nids = $node_storage->getQuery()
+      ->accessCheck(FALSE)
       ->condition('title', $keyword, 'STARTS_WITH')
       ->execute();
     if (!empty($nids)) {
@@ -260,6 +261,7 @@ class PlaywrightDrushCommands extends DrushCommands {
     }
     $taxonomy_term_storage = $this->getEntityTypeManager()->getStorage('taxonomy_term');
     $tids = $taxonomy_term_storage->getQuery()
+      ->accessCheck(FALSE)
       ->condition('name', $keyword, 'STARTS_WITH')
       ->execute();
     if (!empty($tids)) {
