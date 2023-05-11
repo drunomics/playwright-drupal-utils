@@ -1,12 +1,19 @@
 {
   "name": "drunomics/playwright-drupal-utils",
   "description": "Provides commands and helpers for testing with playwright.",
+  "homepage": "https://github.com/drunomics/playwright-drupal-utils",
   "type": "playwright-helper",
+  "license": "GPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "drunomics GmbH",
+      "email": "hello@drunomics.com"
+    }
+  ],
   "require": {
     "drush/drush": ">=11",
     "drunomics/service-utils": "^9.4.1 || ^10.1.0"
   },
-  "license": "GPL-3.0-or-later",
   "autoload": {
     "psr-4": {
       "playwright_drupal_utils\\": "src"
