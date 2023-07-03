@@ -94,7 +94,7 @@ module.exports = {
    */
   checkWatchdogErrors: async (timestamp, fail_on_notice) => {
     const result = drush(`test:checkWatchdog "${timestamp}" "${fail_on_notice}"`);
-    return result.toString();
+    return result;
   },
 
   /**

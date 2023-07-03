@@ -306,17 +306,17 @@ class PlaywrightDrushCommands extends DrushCommands {
     $query->condition('type', 'php');
     $query->orderBy('timestamp', 'DESC');
     $log_entries = $query->execute()->fetchAllAssoc('wid');
+    $fail = 0;
     if ($log_entries && is_array($log_entries)) {
       foreach ($log_entries as $entry) {
         // @see \Drupal\dblog\Controller\DbLogController::formatMessage()
-        $variables = (array) @unserialize($entry->variables, ['allowed_classes' => FALSE]);
+        $variables = @unserialize($entry->variables);
         $message = (new FormattableMarkup($entry->message, $variables));
         $this->writeln($message . ':' . $entry->wid . ':' . $entry->type . ':' . $entry->severity);
-        $this->stderr();
-        exit;
+        $fail += 1;
       }
     }
-    return 0;
+    return $fail;
   }
 
 }
