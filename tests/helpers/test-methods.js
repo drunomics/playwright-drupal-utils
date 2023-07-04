@@ -37,6 +37,27 @@ module.exports = {
       }
     }
   },
+  /**
+   * Checks the canonical URL within the given CE-API response.
+   *
+   * @param {Response} response The given CE-API response
+   * @param canonicalURL The expected URL
+   * @returns {Promise<void>}
+   */
+  expectCanonicalUrl: async (response, canonicalURL) => {
+    let jsonContent = JSON.parse(await response.text());
+    let canonicalExists = false;
+    for (const meta_elem of jsonContent.metatags.link) {
+      if (meta_elem.rel === 'canonical') {
+        canonicalExists = true;
+        expect(meta_elem.href).toEqual(canonicalURL.toString().trim());
+      }
+    }
+    expect(canonicalExists, 'Expect canonical URL to exist').toBeTruthy();
+  },
+  /**
+   * @deprecated
+   */
   checkHomepageCanonicalUrls: async ([response, frontendURL]) => {
     let jsonContent = JSON.parse(await response.text());
     let canonicalURL = frontendURL + '/';
@@ -52,22 +73,6 @@ module.exports = {
       }
     }
     expect(canonicalExists, 'Expect canonical url to exist').toBeTruthy();
-  },
-  checkMetaUrlContentByProperty: async ([response, key, value, frontendURL]) => {
-    let jsonContent = JSON.parse(await response.text());
-    let canonicalURL = frontendURL + '/';
-    const INSTALL_EXTENSIONS = process.env.LDP_INSTALL_EXTENSIONS ? process.env.LDP_INSTALL_EXTENSIONS : '';
-    if (INSTALL_EXTENSIONS.includes('ldp_cp')) {
-      canonicalURL = process.env.LDP_CP_PORTAL_BASE_URL_DEVPORTAL + '/';
-    }
-    let canonicalExists = false;
-    for (const meta_elem of jsonContent.metatags.meta) {
-      if (meta_elem[key] === value) {
-        canonicalExists = true;
-        expect(meta_elem.content).toEqual(canonicalURL.toString().trim());
-      }
-    }
-    expect(canonicalExists, `Expect metadata key "${key}" to exist with value "${value}"`).toBeTruthy();
   },
   /**
    * Checks if current drupal installation is contentpool.
