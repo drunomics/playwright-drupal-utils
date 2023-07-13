@@ -80,9 +80,7 @@ module.exports = {
    */
   isContentpoolSite: async () => {
     const INSTALL_EXTENSIONS = process.env.LDP_INSTALL_EXTENSIONS ? process.env.LDP_INSTALL_EXTENSIONS : '';
-    console.log('LDP_INSTALL_EXTENSIONS=' + process.env.LDP_INSTALL_EXTENSIONS);
-    console.log('INSTALL_EXTENSIONS=' + INSTALL_EXTENSIONS);
-    return INSTALL_EXTENSIONS.includes('ldp_cp');
+    return INSTALL_EXTENSIONS === '' ? false : INSTALL_EXTENSIONS.includes('ldp_cp');
   },
   /**
    * Checks if given ldp extensions are enabled.
