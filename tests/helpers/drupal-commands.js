@@ -24,7 +24,7 @@ module.exports = {
     const result = drush(`test:node-get-id "${node_title}"`);
     return await page.goto('/node/' + result.toString() + '/layout');
   },
-  
+
   /**
    * Finds node ID via drush and visits node layout preview page in the frontend.
    * @param  {Array<{page: Page, node_title: String}>} array Page object and
@@ -84,17 +84,18 @@ module.exports = {
   cloneNodeByTitle: async ([page, node_type, node_title, new_node_title]) => {
     return drush(`test:node-clone "${node_type}" "${node_title}" "${new_node_title}"`);
   },
-  
+
   /**
    * Checks if there are any errors in the watchdog starting from a certain timestamp.
    *
    * @param timestamp Timestamp from when to look for errors.
    * @param fail_on_notice Boolean to change severity level of watchdog errors.
-   * @returns {Promise<string>} The result.
+   * @returns {Promise<string>} The json result.
    */
   checkWatchdogErrors: async (timestamp, fail_on_notice) => {
-    const result = drush(`test:checkWatchdog "${timestamp}" "${fail_on_notice}"`);
-    return result;
+    const result = drush(`test:checkWatchdog "${timestamp}" "${fail_on_notice}" "1"`);
+    const json = JSON.parse(result.toString());
+    return parseInt(json['numberOfErrors']);
   },
 
   /**
