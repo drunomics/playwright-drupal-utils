@@ -90,11 +90,12 @@ module.exports = {
    *
    * @param timestamp Timestamp from when to look for errors.
    * @param fail_on_notice Boolean to change severity level of watchdog errors.
-   * @returns {Promise<string>} The result.
+   * @returns {Promise<string>} The json result.
    */
   checkWatchdogErrors: async (timestamp, fail_on_notice) => {
-    const result = drush(`test:checkWatchdog "${timestamp}" "${fail_on_notice}"`);
-    return result.toString();
+    const result = drush(`test:checkWatchdog "${timestamp}" "${fail_on_notice}" "1"`);
+    const json = JSON.parse(result.toString());
+    return parseInt(json['numberOfErrors']);
   },
 
   /**

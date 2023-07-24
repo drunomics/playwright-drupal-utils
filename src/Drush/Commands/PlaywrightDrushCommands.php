@@ -286,19 +286,25 @@ class PlaywrightDrushCommands extends DrushCommands {
   }
 
   /**
-   * Check if there are errors in watchdog and exits when found.
+   * Check if there are errors in watchdog.
    *
    * @param int $timestamp
    *   Timestamp from when to look for errors.
    * @param bool $fail_on_notice
    *   Variable to change severity level of which watchdog errors to load.
+   * @param bool $verbose
+   *   Print error messages as well.
    *
    * @bootstrap full
    * @command test:checkWatchdog
    * @aliases testcw
    */
-  public function checkForWatchdogErrors(int $timestamp, bool $fail_on_notice = FALSE) : int {
+  public function checkForWatchdogErrors(int $timestamp, bool $fail_on_notice = FALSE, bool $verbose = FALSE) : string {
     $severity_level = $fail_on_notice ? RfcLogLevel::NOTICE : RfcLogLevel::WARNING;
+    // Check if microtime was used as parameter and convert to unix timestamp.
+    if ($timestamp > 10 ** 13) {
+      $timestamp /= 1000;
+    }
     $query = $this->getDatabaseConnection()->select('watchdog', 'w');
     $query->fields("w");
     $query->condition('timestamp', $timestamp, '>');
@@ -306,17 +312,27 @@ class PlaywrightDrushCommands extends DrushCommands {
     $query->condition('type', 'php');
     $query->orderBy('timestamp', 'DESC');
     $log_entries = $query->execute()->fetchAllAssoc('wid');
+    $result = [
+      'numberOfErrors' => 0,
+      'errors' => [],
+    ];
     if ($log_entries && is_array($log_entries)) {
       foreach ($log_entries as $entry) {
         // @see \Drupal\dblog\Controller\DbLogController::formatMessage()
-        $variables = (array) @unserialize($entry->variables, ['allowed_classes' => FALSE]);
-        $message = (new FormattableMarkup($entry->message, $variables));
-        $this->writeln($message . ':' . $entry->wid . ':' . $entry->type . ':' . $entry->severity);
-        $this->stderr();
-        exit;
+        $variables = @unserialize($entry->variables);
+        if ($verbose) {
+          $message = (new FormattableMarkup($entry->message, $variables));
+          $result['errors'][] = [
+            'message' => $message ?? '',
+            'wid' => $entry->wid ?? '',
+            'type' => $entry->type ?? '',
+            'severity' => $entry->severity ?? '',
+          ];
+        }
+        $result['numberOfErrors'] += 1;
       }
     }
-    return 0;
+    return json_encode($result, JSON_PRETTY_PRINT);
   }
 
 }
