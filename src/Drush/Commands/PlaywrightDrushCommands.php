@@ -286,7 +286,7 @@ class PlaywrightDrushCommands extends DrushCommands {
   }
 
   /**
-   * Check if there are errors in watchdog and exits when found.
+   * Check if there are errors in watchdog.
    *
    * @param int $timestamp
    *   Timestamp from when to look for errors.
