@@ -270,6 +270,17 @@ class PlaywrightDrushCommands extends DrushCommands {
         $taxonomy_term_storage->delete($terms);
       }
     }
+    $media_storage = $this->getEntityTypeManager()->getStorage('media');
+    $mids = $media_storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('name', $keyword, 'STARTS_WITH')
+      ->execute();
+    if (!empty($mids)) {
+      $media = $media_storage->loadMultiple($mids);
+      if (!empty($media)) {
+        $media_storage->delete($media);
+      }
+    }
   }
 
   /**
