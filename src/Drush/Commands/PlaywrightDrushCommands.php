@@ -330,7 +330,7 @@ class PlaywrightDrushCommands extends DrushCommands {
     if ($log_entries && is_array($log_entries)) {
       foreach ($log_entries as $entry) {
         // @see \Drupal\dblog\Controller\DbLogController::formatMessage()
-        $variables = @unserialize($entry->variables);
+        $variables = (array) @unserialize($entry->variables, ['allowed_classes' => FALSE]);
         if ($verbose) {
           $message = (new FormattableMarkup($entry->message, $variables));
           $result['errors'][] = [
