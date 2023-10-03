@@ -105,6 +105,24 @@ module.exports = {
    * and page object.
    */
   theStatusMessageShouldContain: async ([message, page]) => {
-    await expect(page.locator('div.messages__content')).toContainText(message, { useInnerText: true});
-  }
+    await expect(page.locator('div.messages__content')).toContainText(message, { useInnerText: true });
+  },
+  /**
+   * Fills CKEditor Text Area.
+   * @param  {Array.<{page: Page, locator: String, textAreaContent: String}>}
+   * array page object, selector and text to be filled.
+   */
+  fillCKEditorTextArea: async ([page, locator, textAreaContent]) => {
+    // Wait for selector to load.
+    await page.waitForSelector(locator);
+
+    // Evaluate script in the page to interact with CKEditor.
+    await page.evaluate(({ locator, textAreaContent }) => {
+      let domEditableElement = document.querySelector(locator);
+      let editorInstance = domEditableElement.ckeditorInstance;
+
+      // Fill data into CKEditor textarea.
+      editorInstance.setData(textAreaContent);
+    }, { locator, textAreaContent });
+  },
 };
