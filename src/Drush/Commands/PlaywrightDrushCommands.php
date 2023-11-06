@@ -257,9 +257,8 @@ class PlaywrightDrushCommands extends DrushCommands {
       $nodes = $node_storage->loadMultiple($nids);
       if (!empty($nodes)) {
         if (\Drupal::hasService('content_lock')) {
-          // Release locks for all nodes. If this is not done: as of at least
-          // v8.x-2.3, content_lock_entity_predelete() does a hard redirect
-          // -outputting a HTML response to STDOUT- and exit().
+          // Never keep content with the specified keyword, regardless of lock
+          // status.
           /** @var \Drupal\content_lock\ContentLock\ContentLock $lock_service */
           $lock_service = \Drupal::service('content_lock');
           foreach ($nodes as $node) {
