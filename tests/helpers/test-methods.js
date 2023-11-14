@@ -1,4 +1,5 @@
 const { expect } = require('@playwright/test');
+let drupal = require('./drupal-commands');
 
 module.exports = {
   IShouldNotBeLoggedIn: async (page) => {
