@@ -256,6 +256,22 @@ class PlaywrightDrushCommands extends DrushCommands {
     if (!empty($nids)) {
       $nodes = $node_storage->loadMultiple($nids);
       if (!empty($nodes)) {
+        if (\Drupal::hasService('content_lock')) {
+          // Never keep content with the specified keyword, regardless of lock
+          // status.
+          /** @var \Drupal\content_lock\ContentLock\ContentLock $lock_service */
+          $lock_service = \Drupal::service('content_lock');
+          foreach ($nodes as $node) {
+            if ($lock_service->isLockable($node)) {
+              $langcode = $node->language()->getId();
+              $data = $lock_service->fetchLock($node->id(), NULL, $langcode, 'node');
+              if ($data !== FALSE) {
+                $lock_service->release($node->id(), $langcode, '*');
+              }
+            }
+          }
+        }
+
         $node_storage->delete($nodes);
       }
     }
