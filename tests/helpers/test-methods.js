@@ -125,4 +125,34 @@ module.exports = {
       editorInstance.setData(textAreaContent);
     }, { locator, textAreaContent });
   },
+  /**
+   * Add new section, add a hero block to the section and visit preview.
+   * @param  {Array.<{page: Page, sectionWidth: String, heroHeadline: String, nodeTitle: String}>}
+   * array page object, type of width of section, hero headline to be filled and title of the cloned page.
+   */
+  addSectionHero: async function ([page, sectionWidth, heroHeadline, nodeTitle]) {
+    await page.getByRole('link', { name: 'Add section at end of layout' }).click();
+    await page.getByRole('link', { name: 'One column\ncontent One column' }).click();
+    await page.getByLabel(sectionWidth).check();
+    await page.getByRole('button', { name: 'Add section' }).click();
+
+    // Add block in the last section.
+    await page.getByRole('link', { name: 'Add block' }).last().click();
+    await page.getByRole('link', { name: 'Hero block' }).click();
+    await page.getByLabel('Headline').fill(heroHeadline);
+    // Fill CKEditor Text Area.
+    await this.fillCKEditorTextArea([page, '.ck-editor__editable', 'PLAYWRIGHT: Test Hero Teaser in Section']);
+    await page.getByRole('button', { name: 'Add media' }).click();
+
+    // Add the first image in the list.
+    await page.locator('img.image-style-media-library').first().click();
+    await page.getByRole('button', { name: 'Insert selected' }).click();
+    // Wait for 500ms to image to appear. 
+    await page.waitForTimeout(500);
+    await page.getByRole('button', { name: 'Add block' }).click();
+    await expect(page.locator('div.messages--warning').first()).toContainText('You have unsaved changes.', { useInnerText: true });
+
+    await drupal.visitNodeLayoutPreviewPage([page, nodeTitle]);
+    await expect(page.locator('span', { hasText: heroHeadline })).toHaveCount(1);
+  },
 };
