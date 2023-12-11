@@ -11,7 +11,8 @@ module.exports = {
    */
   visitNodeEditPage: async ([page, node_title]) => {
     const result = drush(`test:node-get-id "${node_title}"`);
-    return await page.goto('/node/' + result.toString() + '/edit?destination=admin/content');
+    const nid = result.toString().replace(/\s+$/,'');
+    return await page.goto(`/node/${nid}/edit?destination=admin/content`);
   },
 
   /**
@@ -22,7 +23,8 @@ module.exports = {
    */
   visitNodeLayoutPage: async ([page, node_title]) => {
     const result = drush(`test:node-get-id "${node_title}"`);
-    return await page.goto('/node/' + result.toString() + '/layout');
+    const nid = result.toString().replace(/\s+$/,'');
+    return await page.goto(`/node/${nid}/layout`);
   },
 
   /**
@@ -33,9 +35,10 @@ module.exports = {
    */
   visitNodeLayoutPreviewPage: async ([page, node_title]) => {
     const result = drush(`test:node-get-id "${node_title}"`);
+    const nid = result.toString().replace(/\s+$/,'');
     // We do not have to explicitly go to the frontend via an absolute URL,
     // since the backend path redirects to the frontend also.
-    return await page.goto('/node/' + result.toString() + '/layout-preview?auth=1');
+    return await page.goto(`/node/${nid}/layout-preview?auth=1`);
   },
 
   /**
@@ -46,7 +49,7 @@ module.exports = {
    */
   getNodeIdByTitle: async ([page, node_title]) => {
     const result = drush(`test:node-get-id "${node_title}"`);
-    return result.toString();
+    return result.toString().replace(/\s+$/,'');
   },
 
   /**
@@ -57,7 +60,9 @@ module.exports = {
    */
   visitNodeByTitle: async ([page, node_title]) => {
     const result = drush(`test:node-get-path "${node_title}"`);
-    return await page.goto(result.toString());
+    // Remove only newline; keep any trailing spaces (that should never exist).
+    const path = result.toString().replace(/\n+$/,'');
+    return await page.goto(path);
   },
 
 
@@ -72,7 +77,8 @@ module.exports = {
     if (!baseUrl) {
       baseUrl = process.env.SITE_ADMIN_BASE_URL;
     }
-    return await page.goto(baseUrl + '/api' + result.toString());
+    const path = result.toString().replace(/\n+$/,'');
+    return await page.goto(`${baseUrl}/api${path}`);
   },
 
   /**
