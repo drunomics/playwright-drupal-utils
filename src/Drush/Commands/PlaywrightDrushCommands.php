@@ -242,7 +242,7 @@ class PlaywrightDrushCommands extends DrushCommands {
    * Add a translation to a content entity.
    *
    * If a translation already exists: do nothing - and exit without error, so
-   * the command can run repeatedly, (If a test fails because of missing
+   * the command can run repeatedly. (If a test fails because of missing
    * certain translated text, it's likely that the test should be changed to
    * take the already-present translated content into account.)
    *

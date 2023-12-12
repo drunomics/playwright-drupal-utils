@@ -99,11 +99,12 @@ module.exports = {
    * Adds a translation to a content entity if none exists yet.
    *
    * This is an alternative to either importing translations as demo content or
-   * adding translations through the UI. The latter method has the disadvantage
-   * that if a translation is already present (because of a test being re-run)
-   * the UI behaves differently. This command changes nothing if the translation
-   * is already present; if the existing translation differs from the
-   * 'translation' argument, that's a sign the test should likely be changed.
+   * adding translations through the UI / Playwright JS directly. The latter
+   * method is complicated by the fact that if a translation is already present
+   * (because of a test being re-run), the UI behaves differently. This command
+   * changes nothing if the translation is already present; if the existing
+   * translation differs from the 'translation' argument, that's a sign the
+   * test should likely be changed.
    *
    * @param  {Array<{entity_type: String, entity_spec: String, langcode: String, translation: String}>} array
    *   Content entity type, specification to select entity of this type,
