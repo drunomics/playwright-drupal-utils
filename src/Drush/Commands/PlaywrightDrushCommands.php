@@ -6,6 +6,7 @@ use drunomics\ServiceUtils\Core\Database\DatabaseConnectionTrait;
 use drunomics\ServiceUtils\Core\Entity\EntityTypeManagerTrait;
 use drunomics\ServiceUtils\Core\Path\AliasManagerTrait;
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Entity\TranslatableInterface;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\node\NodeInterface;
 use Drush\Commands\DrushCommands;
@@ -238,6 +239,65 @@ class PlaywrightDrushCommands extends DrushCommands {
   }
 
   /**
+   * Add a translation to a content entity.
+   *
+   * If a translation already exists: do nothing - and exit without error, so
+   * the command can run repeatedly, (If a test fails because of missing
+   * certain translated text, it's likely that the test should be changed to
+   * take the already-present translated content into account.)
+   *
+   * @param string $entity_type
+   *   The entity type.
+   * @param string $entity_spec
+   *   An identifier for the entity: either its label, or property/field-value
+   *   pairs represented as a JSON object (optionally base64-encoded).
+   * @param string $langcode
+   *   Language code to translate specified fields into.
+   * @param string $translation
+   *   Fields with translated string values, represented as a JSON object
+   *   (optionally base64-encoded).
+   *
+   * @bootstrap full
+   * @command test:entity-add-translation
+   */
+  public function translateEntity($entity_type, $entity_spec, $langcode, $translation) {
+    $translation = $this->decodeJsonObject($translation);
+    if (!$translation) {
+      throw new \Exception("'translation' argument is not a JSON object.");
+    }
+
+    $storage = $this->getEntityTypeManager()->getStorage($entity_type);
+    $load_by_properties = $this->decodeJsonObject($entity_spec)
+      ?? [$storage->getEntityType()->getKey('label') => $entity_spec];
+    $entities = $storage->loadByProperties($load_by_properties);
+    if (!$entities) {
+      throw new \Exception("Could not find {$entity_type} matching " . json_encode($load_by_properties) . '.');
+    }
+    if (count($entities) > 1) {
+      throw new \Exception('Found ' . count($entities) . " {$entity_type} entities matching " . json_encode($load_by_properties) . '.');
+    }
+    $original_entity = current($entities);
+    if (!$original_entity instanceof TranslatableInterface) {
+      throw new \Exception("{$entity_type} matching " . json_encode($load_by_properties) . ' is not translatable.');
+    }
+
+    $current_languges = $original_entity->getTranslationLanguages();
+    if (isset($current_languges[$langcode])) {
+      // Do not touch any translated data that is already present. Exit without
+      // error, so repeated tests run OK.
+      $this->logger()
+        ->warning(dt('@type matching @spec already has a translation; exiting.', [
+          '@type' => $entity_type,
+          '@spec' => json_encode($load_by_properties),
+        ]));
+    }
+    else {
+      $translated_entity = $original_entity->addTranslation($langcode, $translation + $original_entity->toArray());
+      $translated_entity->save();
+    }
+  }
+
+  /**
    * Clean-up content we created.
    *
    * @param string $keyword
@@ -360,6 +420,32 @@ class PlaywrightDrushCommands extends DrushCommands {
       }
     }
     return json_encode($result, JSON_PRETTY_PRINT);
+  }
+
+  /**
+   * Decodes a JSON object which is optionally base64-encoded.
+   *
+   * Base64-encoding is supported for callers that have issues passing quotes.
+   *
+   * @param string $properties
+   *   The string to decode.
+   *
+   * @return ?array
+   *   A decoded array or NULL if not valid JSON.
+   *
+   * @throws \Exception
+   *   If the decoded value is valid but not an array.
+   */
+  private function decodeJsonObject(string $properties) {
+    $decoded = json_decode($properties, TRUE);
+    if (!is_array($decoded) || !$decoded) {
+      $decoded = json_decode(base64_decode($properties) ?: '', TRUE);
+    }
+    if (isset($decoded) && !is_array($decoded)) {
+      throw new \Exception("Invalid (base64) JSON: '$properties'");
+    }
+
+    return $decoded;
   }
 
 }
