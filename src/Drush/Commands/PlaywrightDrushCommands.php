@@ -171,6 +171,45 @@ class PlaywrightDrushCommands extends DrushCommands {
   }
 
   /**
+   * Gets id of entity.
+   *
+   * @param string $entity_type
+   *   The entity type.
+   * @param string $entity_spec
+   *   An identifier for the entity: either its label, or property/field-value
+   *   pairs represented as a JSON object (optionally base64-encoded). These
+   *   must resolve to a single entity.
+   *
+   * @return string
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   *
+   * @bootstrap full
+   * @command test:entity-get-id
+   * @aliases ngid
+   */
+  public function getEntityIdByLabel(string $entity_type, string $entity_spec): string {
+    $storage = $this->getEntityTypeManager()->getStorage($entity_type);
+    $query_contidions = $this->decodeJsonObject($entity_spec)
+          ?? [$storage->getEntityType()->getKey('label') => $entity_spec];
+    $query = $storage
+      ->getQuery()
+      ->accessCheck(FALSE);
+    foreach ($query_contidions as $property => $value) {
+      $query->condition($property, $value);
+    }
+    $entity_ids = $query->execute();
+    if (!$entity_ids) {
+      throw new \Exception("Could not find {$entity_type} matching " . json_encode($query_contidions) . '.');
+    }
+    if (count($entity_ids) > 1) {
+      throw new \Exception('Found ' . count($entity_ids) . " {$entity_type} entities matching " . json_encode($query_contidions) . '.');
+    }
+    return current($entity_ids);
+  }
+
+  /**
    * Gets path of node with given title.
    *
    * @param string $title
@@ -250,7 +289,8 @@ class PlaywrightDrushCommands extends DrushCommands {
    *   The entity type.
    * @param string $entity_spec
    *   An identifier for the entity: either its label, or property/field-value
-   *   pairs represented as a JSON object (optionally base64-encoded).
+   *   pairs represented as a JSON object (optionally base64-encoded). These
+   *   must resolve to a single entity.
    * @param string $langcode
    *   Language code to translate specified fields into.
    * @param string $translation
@@ -286,7 +326,7 @@ class PlaywrightDrushCommands extends DrushCommands {
       // Do not touch any translated data that is already present. Exit without
       // error, so repeated tests run OK.
       $this->logger()
-        ->warning(dt('@type matching @spec already has a translation; exiting.', [
+        ->notice(dt('@type matching @spec already has a translation; exiting.', [
           '@type' => $entity_type,
           '@spec' => json_encode($load_by_properties),
         ]));

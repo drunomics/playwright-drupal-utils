@@ -58,6 +58,25 @@ module.exports = {
   },
 
   /**
+   * Finds entity ID via drush and returns it.
+   * @param  {Array<{page: Page, entity_type: String, label: String}>} array
+   *   Page object, entity type, specification to select entity of this type,
+   *   entity_spec must resolve to a single entity of the given type and can be
+   *   either a label, or a JSON object as '{"field/property": value, ...}'.
+   * @returns {Promise<string>} The result.
+   */
+  getEntityId: async ([page, entity_type, entity_spec]) => {
+    // The drush command supports base64 encoded JSON object to evade dealing
+    // with double quotes. entity_spec must not be encoded if it's just a
+    // label; encode it if it's a bracketed string with a "key": inside.
+    if (entity_spec.match(/^\s*{\s*".*"\s*:.*}\s*$/s)) {
+      entity_spec = btoa(entity_spec);
+    }
+    const result = drush(`test:entity-get-id "${entity_type}" "${entity_spec}"`);
+    return result.toString().replace(/\s+$/,'');
+  },
+
+  /**
    * Visits node path found by title via drush.
    * @param  {Array<{page: Page, node_title: String}>} array Page object and
    *   node title
