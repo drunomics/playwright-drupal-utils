@@ -49,7 +49,7 @@ class PlaywrightDrushCommands extends DrushCommands {
     }
     $clone = $node->createDuplicate();
     $clone->title = $new_node_title;
-    if ($clone->hasField('moderation_state')) {
+    if ($moderation_state && $clone->hasField('moderation_state')) {
       $clone->set('moderation_state', $moderation_state);
     }
     $clone->save();
