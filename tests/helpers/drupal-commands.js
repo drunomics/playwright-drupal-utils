@@ -106,12 +106,12 @@ module.exports = {
 
   /**
    * Clones node with given title to a new node with new title.
-   * @param  {Array<{page: Page, node_title: String, new_node_title: String}>}
-   *   array Page object and node title
+   * @param  {Array<{page: Page, node_title: String, new_node_title: String, moderation_state: String}>}
+   *   array Page object, node title and moderation_state with default published status.
    * @return {string} The output of the command run.
    */
-  cloneNodeByTitle: async ([page, node_type, node_title, new_node_title]) => {
-    return drush(`test:node-clone "${node_type}" "${node_title}" "${new_node_title}"`);
+  cloneNodeByTitle: async ([page, node_type, node_title, new_node_title, moderation_state = "published"]) => {
+    return drush(`test:node-clone "${node_type}" "${node_title}" "${new_node_title}" "${moderation_state}"`);
   },
 
   /**
