@@ -5,15 +5,14 @@ function drush(command) {
 module.exports = {
   /**
    * Finds node ID via drush and visits node edit page.
-   * @param  {Array<{page: Page, node_title: String}>} array Page object and
-   *   node title
-   * @param {string} langcode Optional language code prefix for the URL.
+   * @param  {Array<{page: Page, node_title: String, langcode: String}>} array
+   *   Page object, node title and optional language code prefix for the URL.
    *   Note the node title must be in the original language. The visited page
    *   will edit the node's translation if it exists, otherwise the original
    *   language node (just in another UI language).
    * @return {Response} The response.
    */
-  visitNodeEditPage: async ([page, node_title], langcode = '') => {
+  visitNodeEditPage: async ([page, node_title, langcode = '']) => {
     const lang_prefix = langcode ? `/${langcode}` : '';
     const result = drush(`test:node-get-id "${node_title}"`);
     const nid = result.toString().replace(/\s+$/,'');
