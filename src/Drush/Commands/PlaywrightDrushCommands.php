@@ -28,6 +28,8 @@ class PlaywrightDrushCommands extends DrushCommands {
    *   The title of node to be cloned.
    * @param string $new_node_title
    *   Title of the clone.
+   * @param string $moderation_state
+   *   (Optional) moderation state of the clone.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
@@ -36,7 +38,7 @@ class PlaywrightDrushCommands extends DrushCommands {
    * @command test:node-clone
    * @aliases nc
    */
-  public function cloneNodeByTitle($node_type, $node_title, $new_node_title) {
+  public function cloneNodeByTitle($node_type, $node_title, $new_node_title, $moderation_state = 'published') {
     $storage = $this->getEntityTypeManager()->getStorage('node');
     $nodes = $storage->loadByProperties([
       'title' => $node_title,
@@ -47,8 +49,8 @@ class PlaywrightDrushCommands extends DrushCommands {
     }
     $clone = $node->createDuplicate();
     $clone->title = $new_node_title;
-    if ($clone->hasField('moderation_state')) {
-      $clone->set('moderation_state', "published");
+    if ($moderation_state && $clone->hasField('moderation_state')) {
+      $clone->set('moderation_state', $moderation_state);
     }
     $clone->save();
   }
