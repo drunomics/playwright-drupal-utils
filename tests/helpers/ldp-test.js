@@ -8,6 +8,6 @@ exports.test = base.test.extend({
   frontendURL: ['http://example.ldp-project.localdev.space', { option: true }],
   watchdog: [async ({}, use, testInfo) => {
     await use();
-    await expect(await drupal.checkWatchdogErrors(testInfo['_startWallTime'])).toEqual(0);
+    await expect(await drupal.checkWatchdogErrors(testInfo['_startWallTime'], true)).toEqual(0);
   }, { scope: 'test', auto: true }]
 });
