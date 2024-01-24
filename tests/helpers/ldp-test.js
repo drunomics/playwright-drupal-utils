@@ -1,5 +1,5 @@
-const base = require('@playwright/test');
-const expect= require('@playwright/test');
+const base  = require('@playwright/test');
+const { expect } = require('@playwright/test');
 const drupal = require('../helpers/drupal-commands');
 
 exports.test = base.test.extend({
