@@ -419,7 +419,6 @@ class PlaywrightDrushCommands extends DrushCommands {
       ->condition('title', $keyword, 'STARTS_WITH')
       ->condition('langcode', $langcode)
       ->execute();
-
     if (!empty($nids)) {
       $nodes = $node_storage->loadMultiple($nids);
       if (!empty($nodes)) {
