@@ -412,7 +412,7 @@ class PlaywrightDrushCommands extends DrushCommands {
    * @bootstrap full
    * @command test:translationCleanUp
    */
-  public function cleanUpTranslation (string $keyword, string $langcode): void {
+  public function cleanUpTranslation(string $keyword, string $langcode): void {
     $node_storage = $this->getEntityTypeManager()->getStorage('node');
     $nids = $node_storage->getQuery()
       ->accessCheck(FALSE)
