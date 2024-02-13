@@ -124,24 +124,41 @@ module.exports = {
    * translation differs from the 'translation' argument, that's a sign the
    * test should likely be changed.
    *
-   * @param  {Array<{entity_type: String, entity_spec: String, langcode: String, translation: String}>} array
+   * @param  {Array<{entity_type: String, entity_spec: Object/String, langcode: String, translation: Object/String}>} array
    *   Content entity type, specification to select entity of this type,
-   *   language to translate into, and all fields to translate. The translation
-   *   must be a string representing a JSON object as
-   *   '{"field/property": value, ...}'. Note that non-ASCII characters must be
-   *   properly JSON-encoded. entity_spec must resolve to a single entity of
-   *   the given type and can be either a similar JSON object with existing
-   *   property/field values, or is otherwise assumed to be the entity's label.
+   *   language to translate into, and all fields to translate. 
+   *   entity_spec must resolve to a single entity ofthe given type and
+   *   can be either an entity label an object containing property field values.
    * @return {string} The output of the command run.
    */
   addEntityTranslation: async ([entity_type, entity_spec, langcode, translation]) => {
-    // The drush command supports base64 encoded JSON object to evade dealing
-    // with double quotes. entity_spec must not be encoded if it's just a
-    // label; encode it if it's a bracketed string with a "key": inside.
-    if (entity_spec.match(/^\s*{\s*".*"\s*:.*}\s*$/s)) {
+    // Passing a JSON encoded string is deprecated; passing a single entity
+    // label as a string is allowed.
+    if (typeof entity_spec === 'string') {
+      if (entity_spec.match(/^\s*{\s*".*"\s*:.*}\s*$/s)) {
+        entity_spec = btoa(entity_spec);
+      }
+    }
+    else {
+      entity_spec = JSON.stringify(entity_spec);
+      // Double quotes cannot be sent as a single command parameter to a
+      // bash command inside a docker container, so base64-encode the string.
+      // (The drush command supports this.) UTF8-escape non-ASCII characters 
+      // first, so base64 can deal with them.
+      entity_spec  = entity_spec.replace(/[\u007F-\uFFFF]/g, function(chr) {
+        return "\\u" + ("0000" + chr.charCodeAt(0).toString(16)).slice(-4)
+      })
       entity_spec = btoa(entity_spec);
     }
+
+    if (typeof translation !== 'string') {
+      translation = JSON.stringify(translation);
+      translation  = translation.replace(/[\u007F-\uFFFF]/g, function(chr) {
+        return "\\u" + ("0000" + chr.charCodeAt(0).toString(16)).slice(-4)
+      })
+    }
     translation = btoa(translation);
+
     return drush(`test:entity-add-translation "${entity_type}" "${entity_spec}" "${langcode}" "${translation}"`);
   },
 
