@@ -182,5 +182,14 @@ module.exports = {
   cleanUpContent: async (keyword) => {
     drush(`test:testsCleanUp "${keyword}"`);
   },
+
+  /**
+   * Removes translation prefixed with given keyword.
+   * @param  {String} keyword Keyword to find translation by.
+   * @param  {String} langcode Language code of the translation.
+   */
+  cleanUpTranslation: async (keyword, langcode) => {
+    drush(`test:translationCleanUp "${keyword}" "${langcode}"`);
+  },
   drush
 }
