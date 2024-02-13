@@ -124,14 +124,11 @@ module.exports = {
    * translation differs from the 'translation' argument, that's a sign the
    * test should likely be changed.
    *
-   * @param  {Array<{entity_type: String, entity_spec: String, langcode: String, translation: String}>} array
+   * @param  {Array<{entity_type: String, entity_spec: Object/String, langcode: String, translation: Object/String}>} array
    *   Content entity type, specification to select entity of this type,
-   *   language to translate into, and all fields to translate. The translation
-   *   must be a string representing a JSON object as
-   *   '{"field/property": value, ...}'. Note that non-ASCII characters must be
-   *   properly JSON-encoded. entity_spec must resolve to a single entity of
-   *   the given type and can be either a similar JSON object with existing
-   *   property/field values, or is otherwise assumed to be the entity's label.
+   *   language to translate into, and all fields to translate. 
+   *   entity_spec must resolve to a single entity ofthe given type and
+   *   can be either an entity label an object containing property field values.
    * @return {string} The output of the command run.
    */
   addEntityTranslation: async ([entity_type, entity_spec, langcode, translation]) => {
