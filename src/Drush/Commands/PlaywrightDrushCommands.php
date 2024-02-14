@@ -504,7 +504,7 @@ class PlaywrightDrushCommands extends DrushCommands {
             'message' => $message ?? '',
             'wid' => $entry->wid ?? '',
             'type' => $entry->type ?? '',
-            'severity' => $entry->severity ?? '',
+            'severity' => RfcLogLevel::getLevels()[$entry->severity] ?? '',
           ];
         }
         $result['numberOfErrors'] += 1;
