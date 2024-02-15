@@ -126,7 +126,7 @@ module.exports = {
    *
    * @param  {Array<{entity_type: String, entity_spec: Object/String, langcode: String, translation: Object/String}>} array
    *   Content entity type, specification to select entity of this type,
-   *   language to translate into, and all fields to translate. 
+   *   language to translate into, and all fields to translate.
    *   entity_spec must resolve to a single entity ofthe given type and
    *   can be either an entity label an object containing property field values.
    * @return {string} The output of the command run.
@@ -143,7 +143,7 @@ module.exports = {
       entity_spec = JSON.stringify(entity_spec);
       // Double quotes cannot be sent as a single command parameter to a
       // bash command inside a docker container, so base64-encode the string.
-      // (The drush command supports this.) UTF8-escape non-ASCII characters 
+      // (The drush command supports this.) UTF8-escape non-ASCII characters
       // first, so base64 can deal with them.
       entity_spec  = entity_spec.replace(/[\u007F-\uFFFF]/g, function(chr) {
         return "\\u" + ("0000" + chr.charCodeAt(0).toString(16)).slice(-4)
@@ -167,12 +167,13 @@ module.exports = {
    *
    * @param timestamp Timestamp from when to look for errors.
    * @param fail_on_notice Boolean to change severity level of watchdog errors.
+   * @param verbose Boolean to verbose output of watchdog errors.
    * @returns {Promise<string>} The json result.
    */
-  checkWatchdogErrors: async (timestamp, fail_on_notice) => {
-    const result = drush(`test:checkWatchdog "${timestamp}" "${fail_on_notice}" "1"`);
+  checkWatchdogErrors: async (timestamp, fail_on_notice, verbose =  false) => {
+    const result = drush(`test:checkWatchdog "${timestamp}" "${fail_on_notice}" "${verbose}"`);
     const json = JSON.parse(result.toString());
-    return parseInt(json['numberOfErrors']);
+    return verbose ? json : parseInt(json['numberOfErrors']);
   },
 
   /**
