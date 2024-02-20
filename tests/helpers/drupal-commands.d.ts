@@ -68,6 +68,7 @@ export async function cloneNodeByTitle([page, node_type, node_title, new_node_ti
  *
  * @param timestamp Timestamp from when to look for errors.
  * @param fail_on_notice Boolean to change severity level of watchdog errors.
+ * @param verbose Boolean to verbose output of watchdog errors.
  * @returns {Promise<string>} The json result.
  */
-export async function checkWatchdogErrors(timestamp, fail_on_notice = false): Promise<number>;
+export async function checkWatchdogErrors(timestamp, fail_on_notice = false, verbose = false): Promise<number>;

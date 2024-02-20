@@ -402,6 +402,55 @@ class PlaywrightDrushCommands extends DrushCommands {
   }
 
   /**
+   * Clean-up translations.
+   *
+   * @param string $keyword
+   *   Title of the translated node.
+   * @param string $langcode
+   *   Language code of the translation.
+   *
+   * @bootstrap full
+   * @command test:translationCleanUp
+   */
+  public function cleanUpTranslation(string $keyword, string $langcode): void {
+    $node_storage = $this->getEntityTypeManager()->getStorage('node');
+    $nids = $node_storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('title', $keyword, 'STARTS_WITH')
+      ->condition('langcode', $langcode)
+      ->execute();
+    if (!empty($nids)) {
+      $nodes = $node_storage->loadMultiple($nids);
+      if (!empty($nodes)) {
+        foreach ($nodes as $node) {
+          if ($node->hasTranslation($langcode)) {
+            $node->removeTranslation($langcode);
+            $node->save();
+          }
+        }
+      }
+    }
+
+    $taxonomy_term_storage = $this->getEntityTypeManager()->getStorage('taxonomy_term');
+    $tids = $taxonomy_term_storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('name', $keyword, 'STARTS_WITH')
+      ->condition('langcode', $langcode)
+      ->execute();
+    if (!empty($tids)) {
+      $terms = $taxonomy_term_storage->loadMultiple($tids);
+      if (!empty($terms)) {
+        foreach ($terms as $term) {
+          if ($term->hasTranslation($langcode)) {
+            $term->removeTranslation($langcode);
+            $term->save();
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * Gets cors config.
    *
    *   Useful for checking if cors is properly configured.
@@ -455,7 +504,7 @@ class PlaywrightDrushCommands extends DrushCommands {
             'message' => $message ?? '',
             'wid' => $entry->wid ?? '',
             'type' => $entry->type ?? '',
-            'severity' => $entry->severity ?? '',
+            'severity' => RfcLogLevel::getLevels()[$entry->severity] ?? '',
           ];
         }
         $result['numberOfErrors'] += 1;
