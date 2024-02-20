@@ -8,6 +8,15 @@ exports.test = base.test.extend({
   frontendURL: ['http://example.ldp-project.localdev.space', { option: true }],
   watchdog: [async ({}, use, testInfo) => {
     await use();
-    await expect(await drupal.checkWatchdogErrors(testInfo['_startWallTime'], true)).toEqual(0);
+    const watchdog_errors = await drupal.checkWatchdogErrors(Math.floor(testInfo['_startWallTime'] / 1000), true, true)
+    if (parseInt(watchdog_errors['numberOfErrors']) > 0) {
+      watchdog_errors['errors'].map((error) => testInfo.errors.push({
+        message: `Watchdog item ID: ${error['wid']}
+type: ${error['type']}
+severity: ${error['severity']}
+message: ${error['message']}`
+      }))
+    }
+    expect(parseInt(watchdog_errors['numberOfErrors'])).toEqual(0);
   }, { scope: 'test', auto: true }]
 });
