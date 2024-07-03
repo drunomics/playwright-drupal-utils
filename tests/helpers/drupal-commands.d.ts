@@ -72,3 +72,11 @@ export async function cloneNodeByTitle([page, node_type, node_title, new_node_ti
  * @returns {Promise<string>} The json result.
  */
 export async function checkWatchdogErrors(timestamp, fail_on_notice = false, verbose = false): Promise<number>;
+
+/**
+ * Logs out the current user.
+ * @param  page Page object.
+ * @param  base_url Base url.
+ * @return {Response} The response.
+ */
+export function logout(page, base_url): Promise<Response>;
