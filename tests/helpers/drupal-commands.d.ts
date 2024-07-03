@@ -79,4 +79,4 @@ export async function checkWatchdogErrors(timestamp, fail_on_notice = false, ver
  * @param  base_url Base url.
  * @return {Response} The response.
  */
-export function logout(page, base_url): Promise<Response>;
+export function userLogout(page, base_url): Promise<Response>;

@@ -25,7 +25,7 @@ module.exports = {
    * @param base_url Base URL.
    * @return {Response} The response.
    */
-  logout: async (page, base_url) => {
+  userLogout: async (page, base_url) => {
     await page.goto(`${base_url}/user/logout`);
     // Logout has a confirmation page since Drupal 10.3.
     await page.locator('input[value="Log out"]').click();
