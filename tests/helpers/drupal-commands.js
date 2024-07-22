@@ -16,7 +16,7 @@ module.exports = {
     const lang_prefix = langcode ? `/${langcode}` : '';
     const result = drush(`test:node-get-id "${node_title}"`);
     const nid = result.toString().replace(/\s+$/,'');
-    return await page.goto(`${lang_prefix}/node/${nid}/edit?destination=admin/content`);
+    return await page.goto(`${lang_prefix}/node/${nid}/edit?destination=/admin/content`);
   },
 
   /**
