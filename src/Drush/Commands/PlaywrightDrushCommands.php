@@ -241,6 +241,8 @@ class PlaywrightDrushCommands extends DrushCommands {
    *
    * @param string $title
    *   Title of the node.
+   * @param string $langcode
+   *   (Optional) language code to look up the path in.
    *
    * @return string
    *
@@ -251,11 +253,16 @@ class PlaywrightDrushCommands extends DrushCommands {
    * @command test:node-get-path-alias
    * @aliases ngpath-alias
    */
-  public function getNodePathAliasWithTitle(string $title): string {
+  public function getNodePathAliasWithTitle(string $title, $langcode = ''): string {
     $nodes = $this->getEntityTypeManager()->getStorage('node')->loadByProperties([
       'title' => $title,
     ]);
     if ($node = reset($nodes)) {
+      if ($langcode) {
+        return $this->getAliasManager()->getAliasByPath('/node/' . $node->id(), $langcode);
+      }
+      // Just a precaution in case getAliasByPath() changes its signature: do
+      // not pass langcode in the default case.
       return $this->getAliasManager()->getAliasByPath('/node/' . $node->id());
     }
     throw new \Exception("Could not find node with title '{$title}'");

@@ -93,13 +93,18 @@ module.exports = {
    * @param  {Object[]} array Page object and node title
    * @return {Response} The response.
    */
-  visitNodeAPIByTitle: async ([page, node_title]) => {
-    const result = drush(`test:node-get-path-alias "${node_title}"`);
+  visitNodeAPIByTitle: async ([page, node_title, langcode = '']) => {
+    const result = drush(`test:node-get-path-alias "${node_title}" "${langcode}"`);
     let baseUrl = process.env.DRUPAL_BASE_URL;
     if (!baseUrl) {
       baseUrl = process.env.SITE_ADMIN_BASE_URL;
     }
-    const path = result.toString().replace(/\n+$/,'');
+    let path = result.toString().replace(/\n+$/,'');
+    if (langcode) {
+      // path is the path alias to the translated page, without language prefix.
+      // Prepend that.
+      path = `/${langcode}${path}`;
+    }
     return await page.goto(`${baseUrl}/api${path}`);
   },
 
