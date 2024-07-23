@@ -2,6 +2,8 @@ export function IShouldNotBeLoggedIn(page): Promise<void>;
 
 export function ILogInAs([page, username]): Promise<void>;
 
+export function ILogOut([page, base_url]): Promise<void>;
+
 export function theCacheHitExists([page, response]): Promise<void>;
 
 export function theHeaderContains([response, headerValue, shouldContain, ...headers]): Promise<void>;

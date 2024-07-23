@@ -20,18 +20,6 @@ module.exports = {
   },
 
   /**
-   * Logs out the current user.
-   * @param page Page object.
-   * @param base_url Base URL.
-   * @return {Response} The response.
-   */
-  userLogout: async (page, base_url) => {
-    await page.goto(`${base_url}/user/logout`);
-    // Logout has a confirmation page since Drupal 10.3.
-    await page.locator('input[value="Log out"]').click();
-  },
-
-  /**
    * Finds node ID via drush and visits node layout page.
    * @param  {Array<{page: Page, node_title: String}>} array Page object and
    *   node title

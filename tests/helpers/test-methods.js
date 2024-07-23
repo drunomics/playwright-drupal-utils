@@ -14,6 +14,11 @@ module.exports = {
     // Then make sure login worked.
     await expect(page.locator('body.user-logged-in').first()).toHaveCount(1);
   },
+  ILogOut: async ([page, base_url]) => {
+    await page.goto(`${base_url}/user/logout`);
+    // Logout has a confirmation page since Drupal 10.3.
+    await page.locator('input[value="Log out"]').click();
+  },
   theCacheHitExists: async ([page, response]) => {
     expect(await response.headerValue('X-Drupal-Cache') == 'HIT' ||
       await response.headerValue('X-Drupal-Dynamic-Cache') == 'HIT' ||
