@@ -8,16 +8,24 @@ module.exports = {
   },
   ILogInAs: async ([page, username]) => {
     await page.goto('/user/login');
-    await page.fill('input[name="name"]', username);
-    await page.fill('input[name="pass"]', process.env.APP_SECRET);
-    await page.click('input[value="Log in"]', process.env.APP_SECRET);
+    await expect(page.locator('form.user-login-form')).toBeVisible;
+    await page.locator('input[name="name"]').fill(username);
+    await page.locator('input[name="pass"]').fill(process.env.APP_SECRET);
+    await page.locator('input[value="Log in"]').click();
     // Then make sure login worked.
     await expect(page.locator('body.user-logged-in').first()).toHaveCount(1);
   },
   ILogOut: async ([page, base_url]) => {
-    await page.goto(`${base_url}/user/logout`);
-    // Logout has a confirmation page since Drupal 10.3.
+    // Go to the confirm form URL directly, instead of /user/logout: it saves a
+    // redirect and supports the destination parameter.
+    // Possible optimization: get the URL including token from the "logout"
+    // menu item; visiting that URL is faster because it doesn't need the extra
+    // "Log out" click.
+    await page.goto(`${base_url}/user/logout/confirm?destination=/user/login`);
     await page.locator('input[value="Log out"]').click();
+    // Verify logout worked, on the immediate destination page. (The default
+    // home page does not have an indicator? So use the login page for that.)
+    await expect(page.locator('form.user-login-form')).toBeVisible;
   },
   theCacheHitExists: async ([page, response]) => {
     expect(await response.headerValue('X-Drupal-Cache') == 'HIT' ||
