@@ -56,3 +56,10 @@ export function theStatusMessageShouldContain([message, page]): Promise<void>;
  * array page object, selector and text to be filled.
  */
 export function fillCKEditorTextArea([page, locator, textAreaContent]): Promise<void>;
+
+/**
+ * Add new section, add a hero block to the section and visit preview.
+ * @param  {Array.<{page: Page, sectionWidth: String, heroHeadline: String, nodeTitle: String}>}
+ * array page object, type of width of section, hero headline to be filled and title of the cloned page.
+ */
+export async function addSectionHero([page, sectionWidth, heroHeadline, nodeTitle]): Promise<void>;
