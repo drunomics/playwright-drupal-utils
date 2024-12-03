@@ -8,6 +8,7 @@ use drunomics\ServiceUtils\Core\Path\AliasManagerTrait;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Entity\TranslatableInterface;
 use Drupal\Core\Logger\RfcLogLevel;
+use Drupal\Core\Render\Markup;
 use Drupal\node\NodeInterface;
 use Drush\Commands\DrushCommands;
 
@@ -504,7 +505,7 @@ class PlaywrightDrushCommands extends DrushCommands {
     if ($log_entries && is_array($log_entries)) {
       foreach ($log_entries as $entry) {
         // @see \Drupal\dblog\Controller\DbLogController::formatMessage()
-        $variables = (array) @unserialize($entry->variables, ['allowed_classes' => FALSE]);
+        $variables = (array) @unserialize($entry->variables, ['allowed_classes' => [Markup::class]]);
         if ($verbose) {
           $message = (new FormattableMarkup($entry->message, $variables));
           $result['errors'][] = [
