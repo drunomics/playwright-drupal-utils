@@ -373,10 +373,28 @@ class PlaywrightDrushCommands extends DrushCommands {
           $lock_service = \Drupal::service('content_lock');
           foreach ($nodes as $node) {
             if ($lock_service->isLockable($node)) {
-              $langcode = $node->language()->getId();
-              $data = $lock_service->fetchLock($node->id(), NULL, $langcode, 'node');
-              if ($data !== FALSE) {
-                $lock_service->release($node->id(), $langcode, '*');
+              // ContentLock method signatures changed in version 3.x, and we
+              // need to support both old and new versions.
+              if (!isset($lock_service_param_type)) {
+                $reflection = new \ReflectionMethod($lock_service, 'fetchLock');
+                $methodParams = $reflection->getParameters();
+                $lock_service_param_type = $methodParams[0]->getType()->getName();
+              }
+              // First param is an Entity in version 3.x.
+              if ($node instanceof $lock_service_param_type) {
+                // Use the new method signature.
+                $data = $lock_service->fetchLock($node);
+                if ($data !== FALSE) {
+                  $lock_service->release($node, '*');
+                }
+              }
+              else {
+                // Use the old method signature.
+                $langcode = $node->language()->getId();
+                $data = $lock_service->fetchLock($node->id(), NULL, $langcode, 'node');
+                if ($data !== FALSE) {
+                  $lock_service->release($node->id(), $langcode, '*');
+                }
               }
             }
           }
