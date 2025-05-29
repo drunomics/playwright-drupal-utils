@@ -138,4 +138,23 @@ module.exports = {
       editorInstance.setData(textAreaContent);
     }, { locator, textAreaContent });
   },
+  /**
+  * Waits for Nuxt 3 page to be fully hydrated.
+  * This function is polling for status of nuxtApp.isHydrating.
+  * @param {Page} page The page to wait for.
+  */
+  waitForNuxtHydration: async (page) => {
+    await page.waitForFunction(
+    () => {
+        if (typeof window === 'undefined') {
+          return false;
+        };
+        const nuxtApp = window.useNuxtApp();
+        // If Nuxt context is available, check isHydrating status.
+        if (nuxtApp && typeof nuxtApp.isHydrating === 'boolean') {
+          return nuxtApp.isHydrating === false;
+        }
+      },
+    );
+  },
 };

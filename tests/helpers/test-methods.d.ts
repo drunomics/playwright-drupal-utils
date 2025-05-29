@@ -56,3 +56,10 @@ export function theStatusMessageShouldContain([message, page]): Promise<void>;
  * array page object, selector and text to be filled.
  */
 export function fillCKEditorTextArea([page, locator, textAreaContent]): Promise<void>;
+
+/**
+ * Waits for Nuxt 3 page to be fully hydrated.
+ * This function is polling for status of nuxtApp.isHydrating.
+ * @param {Page} page The page to wait for.
+ */
+export function waitForNuxtHydration(page): Promise<void>;
