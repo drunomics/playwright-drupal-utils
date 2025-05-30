@@ -144,17 +144,26 @@ module.exports = {
   * @param {Page} page The page to wait for.
   */
   waitForNuxtHydration: async (page) => {
-    await page.waitForFunction(
-    () => {
-        if (typeof window === 'undefined') {
-          return false;
-        };
-        const nuxtApp = window.useNuxtApp();
-        // If Nuxt context is available, check isHydrating status.
+    const timeout = 3000;
+    const pollInterval = 100;
+    const startTime = Date.now();
+
+    while (Date.now() - startTime < timeout) {
+      const isHydrated = await page.evaluate(() => {
+        const nuxtApp = window.useNuxtApp && window.useNuxtApp();
         if (nuxtApp && typeof nuxtApp.isHydrating === 'boolean') {
           return nuxtApp.isHydrating === false;
         }
-      },
-    );
+        return false;
+      });
+
+      if (isHydrated) {
+        return;
+      }
+  
+      await new Promise(resolve => setTimeout(resolve, pollInterval));
+    }
+
+    throw new Error(`Nuxt hydration failed to complete within ${timeout}ms`);
   },
 };
