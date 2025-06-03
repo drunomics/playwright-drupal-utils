@@ -139,31 +139,14 @@ module.exports = {
     }, { locator, textAreaContent });
   },
   /**
-  * Waits for Nuxt 3 page to be fully hydrated.
-  * This function is polling for status of nuxtApp.isHydrating.
-  * @param {Page} page The page to wait for.
+   * Waits for Nuxt 3 page to be fully hydrated.
+   * This function waits for the lupusWaitForNuxtHydrate() promise to resolve.
+   *
+   * @param {Page} page The page to wait for.
   */
   waitForNuxtHydration: async (page) => {
-    const timeout = 3000;
-    const pollInterval = 100;
-    const startTime = Date.now();
-
-    while (Date.now() - startTime < timeout) {
-      const isHydrated = await page.evaluate(() => {
-        const nuxtApp = window.useNuxtApp && window.useNuxtApp();
-        if (nuxtApp && typeof nuxtApp.isHydrating === 'boolean') {
-          return nuxtApp.isHydrating === false;
-        }
-        return false;
-      });
-
-      if (isHydrated) {
-        return;
-      }
-  
-      await new Promise(resolve => setTimeout(resolve, pollInterval));
-    }
-
-    throw new Error(`Nuxt hydration failed to complete within ${timeout}ms`);
+    await page.evaluate(async () => {
+      await window.lupusWaitForNuxtHydrate();
+    });
   },
 };
