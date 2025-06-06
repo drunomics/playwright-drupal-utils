@@ -58,15 +58,13 @@ export function theStatusMessageShouldContain([message, page]): Promise<void>;
 export function fillCKEditorTextArea([page, locator, textAreaContent]): Promise<void>;
 
 /**
- * Waits for Nuxt 3 page to be fully hydrated.
- * This function is waiting for the 'lupus-nuxt:loading:end' event to be emitted.
- * @param {Page} page The page to wait for.
- */
+  * Wait for Nuxt hydration to complete before running tests.
+  * @param {Page} page The page to wait for.
+  */
 export function waitForNuxtHydration(page): Promise<void>;
 
 /**
- * Waits for Nuxt 3 page to be fully ready.
- * This function is waiting for the 'lupus-nuxt:ready' event to be emitted.
- * @param {Page} page The page to wait for.
- */
+  * Wait for Nuxt to be ready before running tests.
+  * @param {Page} page The page to wait for.
+  */
 export function waitForNuxtToBeReady(page): Promise<void>;
