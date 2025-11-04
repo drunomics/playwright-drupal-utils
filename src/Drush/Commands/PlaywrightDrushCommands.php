@@ -374,9 +374,9 @@ class PlaywrightDrushCommands extends DrushCommands {
           foreach ($nodes as $node) {
             if ($lock_service->isLockable($node)) {
               $langcode = $node->language()->getId();
-              $data = $lock_service->fetchLock($node->id(), NULL, $langcode, 'node');
+              $data = $lock_service->fetchLock($node, NULL, $langcode, 'node');
               if ($data !== FALSE) {
-                $lock_service->release($node->id(), $langcode, '*');
+                $lock_service->release($node, $langcode, '*');
               }
             }
           }
