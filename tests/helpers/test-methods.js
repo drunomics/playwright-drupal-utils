@@ -6,8 +6,13 @@ module.exports = {
     await expect(page.locator('body.user-logged-in').first()).toHaveCount(0);
     await expect(page).toHaveURL(/.*user\/login/);
   },
-  ILogInAs: async ([page, username]) => {
-    await page.goto('/user/login');
+  ILogInAs: async ([page, username, destination]) => {
+    // Optionally set a destination to control the post-login redirect. This
+    // can be used to avoid being redirected to the admin dashboard, which
+    // renders views blocks that can cause race conditions during parallel
+    // test execution. Example: ILogInAs([page, 'dru_admin', '/user'])
+    const loginUrl = destination ? `/user/login?destination=${destination}` : '/user/login';
+    await page.goto(loginUrl);
     await expect(page.locator('form.user-login-form')).toBeVisible;
     await page.locator('input[name="name"]').fill(username);
     await page.locator('input[name="pass"]').fill(process.env.APP_SECRET);
