@@ -95,9 +95,13 @@ module.exports = {
    */
   visitNodeAPIByTitle: async ([page, node_title, langcode = '']) => {
     const result = drush(`test:node-get-path-alias "${node_title}" "${langcode}"`);
-    let baseUrl = process.env.DRUPAL_BASE_URL;
-    if (!baseUrl) {
-      baseUrl = process.env.SITE_ADMIN_BASE_URL;
+    let backendApiUrl = process.env.PLAYWRIGHT_BACKEND_URL;
+    if (!backendApiUrl) {
+      let baseUrl = process.env.DRUPAL_BASE_URL;
+      if (!baseUrl) {
+        baseUrl = process.env.SITE_ADMIN_BASE_URL;
+      }
+      backendApiUrl = baseUrl + '/api';
     }
     let path = result.toString().replace(/\n+$/,'');
     if (langcode) {
@@ -105,7 +109,7 @@ module.exports = {
       // Prepend that.
       path = `/${langcode}${path}`;
     }
-    return await page.goto(`${baseUrl}/api${path}`);
+    return await page.goto(`${backendApiUrl}${path}`);
   },
 
   /**
