@@ -22,7 +22,7 @@ module.exports = {
     // menu item; visiting that URL is faster because it doesn't need the extra
     // "Log out" click.
     await page.goto(`${base_url}/user/logout/confirm?destination=/user/login`);
-    await page.locator('input[value="Log out"]').click();
+    await page.getByRole('button', { name: 'Log out' }).first().click();
     // Verify logout worked, on the immediate destination page. (The default
     // home page does not have an indicator? So use the login page for that.)
     await expect(page.locator('form.user-login-form')).toBeVisible;
