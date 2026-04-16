@@ -2,12 +2,24 @@ const { expect } = require('@playwright/test');
 
 module.exports = {
   IShouldNotBeLoggedIn: async (page) => {
-    await page.goto('/user/login', { waitUntil: 'networkidle' });
+    // Use the backend URL since body.user-logged-in is a Drupal body class
+    // only present on backend-rendered pages.
+    const backendUrl = process.env.DRUPAL_BASE_URL || '';
+    await page.goto(`${backendUrl}/user/login`, { waitUntil: 'networkidle' });
     await expect(page.locator('body.user-logged-in').first()).toHaveCount(0);
     await expect(page).toHaveURL(/.*user\/login/);
   },
-  ILogInAs: async ([page, username]) => {
-    await page.goto('/user/login');
+  ILogInAs: async ([page, username, destination]) => {
+    // Use the backend URL since body.user-logged-in is a Drupal body class
+    // only present on backend-rendered pages. In decoupled setups the
+    // frontend /user/login renders a custom form without this class.
+    const backendUrl = process.env.DRUPAL_BASE_URL || '';
+    // Optionally set a destination to control the post-login redirect. This
+    // can be used to avoid being redirected to the admin dashboard, which
+    // renders views blocks that can cause race conditions during parallel
+    // test execution. Example: ILogInAs([page, 'dru_admin', '/user'])
+    const loginUrl = destination ? `${backendUrl}/user/login?destination=${destination}` : `${backendUrl}/user/login`;
+    await page.goto(loginUrl);
     await expect(page.locator('form.user-login-form')).toBeVisible;
     await page.locator('input[name="name"]').fill(username);
     await page.locator('input[name="pass"]').fill(process.env.APP_SECRET);
