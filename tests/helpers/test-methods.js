@@ -154,38 +154,20 @@ module.exports = {
    * Wait for Nuxt hydration to complete before running tests.
    * @param {Page} page The page to wait for.
    */
-  waitForNuxtHydration: async (page) => {
-    await page.evaluate(async () => {
-      return new Promise((resolve) => {
-        // Check if hydration has already completed.
-        if (window.lupusNuxtHydrationComplete) {
-          resolve(true);
-          return;
-        }
-        // Otherwise, wait for the event.
-        window.addEventListener('lupus-nuxt:loading:end', () => resolve(true), {
-          once: true,
-        });
-      });
-    });
+  waitForNuxtHydration: async (page, { timeout = 10000 } = {}) => {
+    await page.waitForFunction(
+      () => window.lupusNuxtHydrationComplete === true,
+      { timeout, polling: 'raf' },
+    );
   },
   /**
    * Wait for Nuxt to be ready before running tests.
    * @param {Page} page The page to wait for.
    */
-  waitForNuxtToBeReady: async (page) => {
-    await page.evaluate(async () => {
-      return new Promise((resolve) => {
-        // Check if Nuxt is already ready.
-        if (window.lupusNuxtReady) {
-          resolve(true);
-          return;
-        }
-        // Otherwise, wait for the event.
-        window.addEventListener('lupus-nuxt:ready', () => resolve(true), {
-          once: true,
-        });
-      });
-    });
+  waitForNuxtToBeReady: async (page, { timeout = 10000 } = {}) => {
+    await page.waitForFunction(
+      () => window.lupusNuxtReady === true,
+      { timeout, polling: 'raf' },
+    );
   },
 };
